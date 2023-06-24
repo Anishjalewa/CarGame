@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    
+    <title>
+Car Game
+    </title>
+    
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<div class="cargame">
+    <div class="score">
+
+    </div>
+    <div class="enemy">
+        
+    </div>
+    <div class="startscreen">
+<p>
+    press here to start<br>
+    arrow key to move<br>
+    if you hit another car you will loose game.
+</p>
+    </div>
+    <div class="gamearea ">
+    </div>
+</div>
+<script>
+   const score=document.querySelector('.score');
+    const startscreen=document.querySelector('.startscreen');
+    const gamearea=document.querySelector('.gamearea');
+    let player={
+        speed : 5,
+        score: 0
+    };
+    function iscollide(a,b){
+        arect=a.getBoundingClientRect();
+        brect=b.getBoundingClientRect();
+        return !((arect.top>brect.bottom)||(arect.bottom<brect.top)||(arect.right<brect.left)||(arect.left>brect.right))
+    }
+    function movelines(){
+        let lines=document.querySelectorAll('.lines');
+        lines.forEach(function(item){
+            if(item.y>700){
+                item.y-=750;
+            }
+item.y+=player.speed;
+item.style.top=item.y+"px";
+        })
+    }
+    function endgame(){
+        player.start=false;
+        startscreen.classList.remove('hide');
+        startscreen.innerHTML="game over <br> your final score is " +player.score+"<br> press here to restart the game";
+    }
+    function moveenemy(car2){
+        let enemy=document.querySelectorAll('.enemy');
+        enemy.forEach(function(item){
+            if(iscollide(car2,item)){
+endgame();
+            }
+            if(item.y>750){
+                item.y=-300;
+                item.style.left=Math.floor(Math.random()*350)+"px";
+            }
+item.y+=player.speed;
+item.style.top=item.y+"px";
+        })
+    }
+    function gameplay(){
+        
+        let car2=document.querySelector('.car');
+        let road = gamearea.getBoundingClientRect();
+        if(player.start){
+        movelines();
+        moveenemy(car2);
+        if(keys.ArrowUp&&player.y>road.top+70){
+            player.y -=player.speed;
+        }
+        if(keys.ArrowRight&&player.x<road.width-50){
+            player.x +=player.speed;
+        }
+        if(keys.ArrowDown&&player.y<road.bottom-70){
+            player.y +=player.speed+5;
+        }
+        if(keys.ArrowLeft&& player.x>0){
+            player.x -=player.speed;
+        }
+        car2.style.top=player.y+"px";
+        car2.style.left=player.x+"px";
+        window.requestAnimationFrame(gameplay);
+        player.score++;
+        let ps=player.score-1;
+        score.innerHTML="score:" +ps;}
+    }
+    function randomcolor(){
+        function c(){
+            let hex=Math.floor(Math.random()*256).toString(16);
+            return(("0"+String(hex)).substr(-2));
+        }
+        return "#"+c()+c()+c();
+    }
+    function start(){
+     //  gamearea.classList.remove('hide');
+        startscreen.classList.add('hide');
+    gamearea.innerHTML="";
+        player.score=0;
+        player.start=true;
+        window.requestAnimationFrame(gameplay);
+        for(let x=0;x<5;x++){
+        let roadline=document.createElement('div');
+        roadline.setAttribute('class','lines');
+        roadline.y=(x*150);
+        roadline.style.top=x*150+"px";
+        gamearea.appendChild(roadline);}
+        let car1 =document.createElement('div');
+        car1.setAttribute('class','car');
+        gamearea.appendChild(car1);
+player.x=car1.offsetLeft;
+player.y=car1.offsetTop;
+for(let x=0;x<3;x++){
+        let enemycar=document.createElement('div');
+        enemycar.setAttribute('class','enemy');
+        enemycar.y=((x+1)*350)*-1;
+        enemycar.style.top=x*150+"px";
+        enemycar.style.background=randomcolor();
+        enemycar.style.left=Math.floor(Math.random()*350)+"px";
+        gamearea.appendChild(enemycar);}
+    }
+    startscreen.addEventListener('click',start);
+   
+    let keys={
+        ArrowUp : false,
+        ArrowDown : false,
+        ArrowLeft : false,
+        ArrowRight : false 
+    }
+   function keydown(e){
+         keys[e.key]=true;
+         //console.log(e.key);
+      //  console.log(keys);
+    }
+    function keyup(e){
+         keys[e.key]=false;
+       //  console.log(e.key);
+        //console.log(keys);
+    }
+    document.addEventListener('keydown',keydown);
+    document.addEventListener('keyup',keyup);
+
+</script>
+</body>
+</html>
